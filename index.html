@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Axios Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Flask and Axios Example</h1>
+    <button id="getDataButton">Get Data</button>
+    <p id="responseData"></p>
+
+    <script>
+        SERVER = "https://cloud-test-9uvm.onrender.com"
+
+        document.getElementById('getDataButton').addEventListener('click', function() {
+            axios.get('SERVER/data')
+                .then(function (response) {
+                    document.getElementById('responseData').innerText = response.data.message;
+                })
+                .catch(function (error) {
+                    console.error('Error fetching data:', error);
+                });
+        });
+    </script>
+</body>
+</html>
