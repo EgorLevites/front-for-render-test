@@ -3,26 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flask Axios Example</title>
+    <title>Flask SQLAlchemy Example</title>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
-    <h1>Flask and Axios Example</h1>
-    <button id="getDataButton">Get Data</button>
-    <p id="responseData"></p>
+    <h1>Flask SQLAlchemy Example</h1>
+
+    <h2>Add User</h2>
+    <input type="text" id="name" placeholder="Name">
+    <input type="email" id="email" placeholder="Email">
+    <button onclick="addUser()">Add User</button>
+
+    <h2>Users List</h2>
+    <button onclick="getUsers()">Get Users</button>
+    <ul id="usersList"></ul>
 
     <script>
-        SERVER = "https://cloud-test-9uvm.onrender.com"
 
-        document.getElementById('getDataButton').addEventListener('click', function() {
-            axios.get('SERVER/data')
-                .then(function (response) {
-                    document.getElementById('responseData').innerText = response.data.message;
+        const SERVER = "https://render-test-back-8d6m.onrender.com"
+
+        function addUser() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            axios.post(`${SERVER}/users`, { name, email })
+                .then(response => {
+                    alert(response.data.message);
+                    getUsers();  // Refresh the users list
                 })
-                .catch(function (error) {
-                    console.error('Error fetching data:', error);
+                .catch(error => {
+                    console.error('Error adding user:', error);
                 });
-        });
+        }
+
+        function getUsers() {
+            axios.get(`${SERVER}/users`)
+                .then(response => {
+                    const usersList = document.getElementById('usersList');
+                    usersList.innerHTML = '';
+                    response.data.forEach(user => {
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            ID: ${user.id}, Name: ${user.name}, Email: ${user.email}
+                            <button onclick="editUser(${user.id})">Edit</button>
+                            <button onclick="deleteUser(${user.id})">Delete</button>
+                        `;
+                        usersList.appendChild(listItem);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching users:', error);
+                });
+        }
+
+        function editUser(id) {
+            const name = prompt("Enter new name:");
+            const email = prompt("Enter new email:");
+            if (name && email) {
+                axios.put(`${SERVER}/users/${id}`, { name, email })
+                    .then(response => {
+                        alert(response.data.message);
+                        getUsers();  // Refresh the users list
+                    })
+                    .catch(error => {
+                        console.error('Error updating user:', error);
+                    });
+            }
+        }
+
+        function deleteUser(id) {
+            axios.delete(`${SERVER}/users/${id}`)
+                .then(response => {
+                    alert(response.data.message);
+                    getUsers();  // Refresh the users list
+                })
+                .catch(error => {
+                    console.error('Error deleting user:', error);
+                });
+        }
     </script>
 </body>
 </html>
